@@ -21,7 +21,8 @@
 - **Khi tập:** ghi set một chạm, đồng hồ nghỉ tự chạy, xem kết quả lần trước, tính bánh tạ cần lắp mỗi bên, đổi bài khi máy bận.
 - **Ăn uống:** calo và macro (Katch-McArdle hoặc Mifflin-St Jeor), ngày tập ăn nhiều hơn ngày nghỉ, ghi nhanh món Việt. Mỗi thứ Hai calo tự chỉnh theo xu hướng cân nặng.
 - **Tiến bộ:** khối lượng nâng theo tuần, biểu đồ cân nặng, kỷ lục 1RM ước tính, check-in tuần.
-- **Học:** 9 bài học ngắn và thư viện 52 bài tập có hướng dẫn và lỗi thường gặp. Có điểm kinh nghiệm (XP) và 6 cấp từ Tân binh tới Chuyên nghiệp.
+- **Hình động minh họa:** chạm vào bài bất kỳ là xem ngay hình người tập đúng tư thế, có tạ, ghế, cáp đi kèm, kèm nhịp lên xuống và nút xem chậm. Vẽ bằng code nên không tải video, chạy cả khi mất mạng.
+- **Học:** 9 bài học ngắn và thư viện 52 bài tập có hình động, hướng dẫn và lỗi thường gặp. Có điểm kinh nghiệm (XP) và 6 cấp từ Tân binh tới Chuyên nghiệp.
 
 ## Dữ liệu
 

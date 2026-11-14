@@ -280,6 +280,24 @@ select.inp{appearance:none;-webkit-appearance:none}
 .scale{display:flex;gap:4px}
 .scale button{flex:1;height:36px;border-radius:9px;background:var(--surface2);font-family:var(--f-display);font-weight:700;font-size:16px}
 .scale button.on{background:var(--accent);color:var(--accent-ink)}
+.fig{display:block;width:100%;height:auto;overflow:visible}
+.fig line{stroke-linecap:round}
+.fig .ln{stroke:var(--fg);stroke-width:6}
+.fig .lf{stroke:var(--muted);stroke-width:6;opacity:.55}
+.fig .hd{fill:var(--fg)}
+.fig .pl{fill:var(--red)}
+.fig .pd{fill:var(--accent)}
+.fig .sv{fill:var(--muted)}
+.fig .pr{fill:var(--surface2);stroke:var(--line);stroke-width:2}
+.fig .gr{stroke:var(--line);stroke-width:2}
+.fig .cb{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:3 3}
+.fig .cb2{stroke:var(--muted);stroke-width:4}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:10px 12px 8px;position:relative}
+.stage .fig{max-height:46vh}
+.stage-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+.thumb{width:40px;height:40px;border-radius:12px;background:var(--surface2);flex:none;padding:2px;overflow:hidden}
+.thumb .fig .ln,.thumb .fig .lf{stroke-width:8}
+.exthumb{width:58px;height:46px;border-radius:12px;background:var(--surface2);flex:none;padding:2px;overflow:hidden}
 </style>
 </head>
 <body>
@@ -473,6 +491,157 @@ function restoreData(file){
     catch(e){toast('File không đúng định dạng sao lưu LazyGym')}};
   r.readAsText(file);
 }
+
+/* ============ exercise animations (vector, no downloads) ============ */
+const SIDE_EDGES=[['S','H'],['S','P'],['S','E2'],['E2','W2'],['P','K2'],['K2','A2'],['A2','T2'],['S','E'],['E','W'],['P','K'],['K','A'],['A','T']];
+const FRONT_EDGES=[['S','H'],['S','P'],['S','SL'],['S','SR'],['SL','EL'],['EL','WL'],['SR','ER'],['ER','WR'],['P','HL'],['P','HR'],['HL','KL'],['KL','AL'],['HR','KR'],['KR','AR']];
+const FAR=new Set(['E2','W2','K2','A2','T2']);
+const ST={H:[100,13],S:[100,24],P:[100,66],K:[100,96],A:[100,126],T:[112,126],E:[100,48],W:[100,70]};
+const st=o=>Object.assign({},ST,o);
+const SQB={P:[89,99],K:[118,101],A:[100,126],T:[112,126],S:[113,65],H:[119,56]};
+const RDLB={H:[131,60],S:[121,63],P:[80,74],K:[104,97],A:[100,126],T:[112,126],E:[121,87],W:[121,109]};
+const SEAT={H:[100,39],S:[100,50],P:[100,92],K:[130,94],A:[130,124],T:[142,126]};
+const BENCH={H:[57,84],S:[68,86],P:[112,86],K:[142,92],A:[138,124],T:[150,126]};
+const INCL={H:[68,58],S:[76,66],P:[110,92],K:[138,96],A:[136,124],T:[148,126]};
+const ROWB={H:[128,52],S:[118,57],P:[82,78],K:[108,98],A:[100,126],T:[112,126]};
+const CROW={H:[82,47],S:[82,58],P:[80,100],K:[110,90],A:[140,96],T:[146,86]};
+const PDN={H:[94,43],S:[96,54],P:[100,96],K:[128,92],A:[128,122],T:[138,126]};
+const HANG={W:[100,-10],E:[100,12],S:[100,34],H:[100,23],P:[100,76]};
+const FRONT={H:[100,10],S:[100,22],SL:[88,26],SR:[112,26],P:[100,64],HL:[93,66],HR:[107,66],KL:[92,96],AL:[91,126],KR:[108,96],AR:[109,126]};
+const DBUG={H:[49,118],S:[60,118],P:[102,118]};
+const MOT={
+ squat_bar:{root:'A',k:[st({E:[90,40],W:[97,22]}),{...SQB,E:[103,80],W:[109,64]}],eq:[['bar','S',-7,2,14,'back']],tempo:'Xuống 2 giây · lên 1 giây'},
+ squat_goblet:{root:'A',k:[st({E:[104,46],W:[110,32]}),{...SQB,E:[116,86],W:[122,72]}],eq:[['dbv','W']],tempo:'Xuống 2 giây · lên 1 giây'},
+ squat_bw:{root:'A',k:[st({E:[124,26],W:[146,26]}),{...SQB,E:[137,66],W:[159,66]}],eq:[],tempo:'Xuống 2 giây · lên 1 giây'},
+ squat_hex:{root:'A',k:[ST,{H:[120,47],S:[113,56],P:[86,88],K:[116,100],A:[100,126],T:[112,126],E:[113,80],W:[113,102]}],eq:[['bar','W',0,0,15]],tempo:'Đẩy sàn đi, hông và vai lên cùng lúc'},
+ deadlift:{root:'A',k:[{H:[126,55],S:[116,61],P:[80,82],K:[108,98],A:[100,126],T:[112,126],E:[116,85],W:[116,107]},ST],eq:[['bar','W',0,0,17]],tempo:'Kéo lên 1 giây · hạ có kiểm soát'},
+ rack_pull:{root:'A',k:[{H:[120,31],S:[113,40],P:[86,72],K:[104,97],A:[100,126],T:[112,126],E:[113,64],W:[113,86]},ST],eq:[['bar','W',0,0,17]],props:[['post',138,70]],tempo:'Kéo lên 1 giây · hạ về chốt'},
+ rdl:{root:'A',k:[ST,RDLB],eq:[['bar','W',0,0,17]],tempo:'Hông lùi 3 giây · đẩy hông về trước'},
+ sl_rdl:{root:'A',k:[ST,{...RDLB,K2:[52,80],A2:[24,84],T2:[22,74]}],eq:[['db','W']],tempo:'Chậm, giữ thăng bằng'},
+ bridge:{root:'A',k:[{T:[152,126],A:[140,126],K:[128,98],P:[104,120],S:[62,120],H:[51,120],E:[86,122],W:[108,124]},{T:[152,126],A:[140,126],K:[134,97],P:[104,101],S:[64,118],H:[53,121],E:[86,124],W:[108,124]}],eq:[],tempo:'Siết mông 1 giây ở đỉnh'},
+ hip_thrust:{root:'A',k:[{T:[152,126],A:[140,126],K:[128,98],P:[104,120],S:[66,98],H:[56,92],E:[86,108],W:[104,112]},{T:[152,126],A:[140,126],K:[134,96],P:[104,98],S:[62,98],H:[51,96],E:[84,96],W:[104,92]}],props:[['box',28,102,42,24]],eq:[['bar','P',0,-9,14]],tempo:'Đẩy hông lên · giữ 1 giây'},
+ bench:{root:'P',k:[{...BENCH,E:[70,62],W:[72,40]},{...BENCH,E:[82,106],W:[80,84]}],props:[['bench',30,90,100]],eq:[['bar','W',0,0,15]],tempo:'Hạ 2 giây chạm ngực · đẩy lên'},
+ floor_press:{root:'P',k:[{H:[57,118],S:[68,118],P:[110,118],K:[132,96],A:[140,124],T:[152,126],E:[70,94],W:[72,72]},{H:[57,118],S:[68,118],P:[110,118],K:[132,96],A:[140,124],T:[152,126],E:[90,124],W:[90,102]}],eq:[['db','W']],tempo:'Khuỷu chạm sàn nhẹ rồi đẩy'},
+ incline:{root:'P',k:[{...INCL,E:[80,42],W:[84,20]},{...INCL,E:[90,86],W:[88,64]}],props:[['incline']],eq:[['db','W']],tempo:'Hạ 2 giây · đẩy lên'},
+ machine_chest:{root:'P',k:[{...SEAT,E:[80,64],W:[104,58]},{...SEAT,E:[124,52],W:[146,52]}],props:[['seat',100,92]],eq:[['handle','W']],tempo:'Đẩy ra 1 giây · về 2 giây'},
+ pushup:{root:'T',k:[{H:[46,76],S:[56,80],E:[56,104],W:[56,126],P:[96,96],K:[127,108],A:[156,120],T:[160,126]},{H:[42,104],S:[53,106],E:[76,112],W:[56,126],P:[95,112],K:[126,116],A:[156,120],T:[160,126]}],eq:[],tempo:'Thân thẳng như tấm ván'},
+ pike:{root:'T',k:[{H:[64,92],S:[72,84],E:[65,105],W:[58,126],P:[102,54],K:[120,84],A:[140,118],T:[150,126]},{H:[60,112],S:[68,102],E:[80,112],W:[58,126],P:[100,70],K:[120,92],A:[140,118],T:[150,126]}],eq:[],tempo:'Đầu đi xuống trước tay'},
+ dip:{root:'W',ground:false,k:[{H:[100,3],S:[100,14],E:[100,38],W:[100,60],P:[100,56],K:[100,86],A:[84,100],T:[80,110]},{H:[110,26],S:[106,36],E:[84,44],W:[100,60],P:[96,76],K:[98,104],A:[80,112],T:[76,122]}],props:[['pbar',100,60]],tempo:'Hạ 2 giây · đẩy lên'},
+ ohp:{root:'A',k:[st({E:[106,44],W:[108,22]}),st({E:[102,0],W:[102,-22]})],eq:[['bar','W',0,0,15]],tempo:'Siết bụng, đẩy thẳng lên'},
+ db_ohp:{root:'P',k:[{...SEAT,E:[104,72],W:[106,50]},{...SEAT,E:[102,26],W:[102,4]}],props:[['seat',100,92]],eq:[['db','W']],tempo:'Đẩy lên 1 giây · hạ 2 giây'},
+ row:{root:'A',k:[{...ROWB,E:[118,81],W:[118,103]},{...ROWB,E:[96,68],W:[110,86]}],eq:[['bar','W',0,0,15]],tempo:'Kéo về rốn · siết bả vai'},
+ cable_row:{root:'P',k:[{...CROW,E:[106,62],W:[128,66]},{...CROW,E:[60,72],W:[84,76]}],props:[['box',64,102,32,24],['pulley',188,84]],eq:[['cable','W',188,84],['handle','W']],tempo:'Kéo 1 giây · ép bả vai · duỗi 2 giây'},
+ wide_row:{root:'P',k:[{...CROW,E:[106,62],W:[128,66]},{...CROW,E:[64,62],W:[88,64]}],props:[['box',64,102,32,24],['pulley',188,84]],eq:[['cable','W',188,84],['handle','W']],tempo:'Kéo về ngực dưới, khuỷu mở'},
+ seal_row:{root:'P',k:[{P:[80,76],S:[122,76],H:[133,76],K:[50,78],A:[22,78],T:[18,86],E:[122,100],W:[122,122]},{P:[80,76],S:[122,76],H:[133,76],K:[50,78],A:[22,78],T:[18,86],E:[104,64],W:[110,84]}],props:[['bench',16,80,96]],eq:[['db','W']],tempo:'Kéo tạ về hông'},
+ inverted:{root:'T',k:[{W:[120,60],E:[120,82],S:[120,106],H:[131,104],P:[83,113],K:[54,118],A:[28,122],T:[24,114]},{W:[120,60],E:[100,62],S:[117,68],H:[126,62],P:[81,90],K:[54,106],A:[28,122],T:[24,114]}],props:[['hbar',120,60]],tempo:'Kéo ngực chạm xà'},
+ pulldown:{root:'P',k:[{...PDN,E:[104,30],W:[108,8]},{...PDN,E:[86,72],W:[104,52]}],props:[['seat',100,96],['pad',128,84],['pulley',108,-26]],eq:[['cable','W',108,-26],['wbar','W']],tempo:'Kéo khuỷu xuống túi quần'},
+ pullup:{root:'W',ground:false,k:[{...HANG,K:[102,104],A:[82,112],T:[78,120]},{W:[100,-10],E:[84,4],S:[98,-4],H:[104,-17],P:[96,38],K:[102,66],A:[84,76],T:[80,84]}],props:[['hbar',100,-10]],tempo:'Kéo ngực lên xà · hạ chậm'},
+ lunge:{root:'A',k:[{H:[110,13],S:[110,24],E:[110,48],W:[110,70],P:[110,66],K:[122,96],A:[130,126],T:[142,126],K2:[98,96],A2:[88,124],T2:[78,126]},{H:[108,39],S:[108,50],E:[108,74],W:[108,96],P:[108,92],K:[136,94],A:[130,126],T:[142,126],K2:[98,122],A2:[76,116],T2:[70,126]}],eq:[['db','W']],tempo:'Gối sau gần chạm sàn'},
+ bulgarian:{root:'A',k:[{H:[110,13],S:[110,24],E:[110,48],W:[110,70],P:[110,66],K:[120,96],A:[130,126],T:[142,126],K2:[94,92],A2:[70,98],T2:[62,96]},{H:[106,40],S:[106,51],E:[106,75],W:[106,97],P:[104,92],K:[134,96],A:[130,126],T:[142,126],K2:[90,118],A2:[70,98],T2:[62,96]}],props:[['box',44,100,36,26]],eq:[['db','W']],tempo:'Hạ thẳng xuống'},
+ step_up:{root:'A',k:[{H:[100,21],S:[100,32],E:[100,56],W:[100,78],P:[100,74],K:[128,78],A:[132,100],T:[144,100],K2:[100,102],A2:[100,126],T2:[112,126]},{H:[130,-13],S:[130,-2],E:[130,22],W:[130,44],P:[130,40],K:[131,70],A:[132,100],T:[144,100],K2:[120,70],A2:[112,96],T2:[106,90]}],props:[['box',110,100,60,26]],eq:[['db','W']],tempo:'Đẩy bằng gót chân trên bục'},
+ leg_press:{root:'P',k:[{H:[46,56],S:[54,64],P:[80,96],E:[70,96],W:[84,104],K:[90,58],A:[110,70],T:[116,60]},{H:[46,56],S:[54,64],P:[80,96],E:[70,96],W:[84,104],K:[102,76],A:[124,56],T:[130,46]}],props:[['recline']],eq:[['sled','A']],tempo:'Hạ tới gối 90° · không khóa gối'},
+ leg_ext:{root:'P',k:[{H:[92,39],S:[92,50],P:[96,92],E:[100,74],W:[108,94],K:[124,94],A:[124,124],T:[136,126]},{H:[92,39],S:[92,50],P:[96,92],E:[100,74],W:[108,94],K:[124,94],A:[154,90],T:[162,82]}],props:[['seat',96,92]],eq:[['roller','A']],tempo:'Giữ 1 giây ở đỉnh'},
+ leg_curl:{root:'P',k:[{H:[49,96],S:[60,96],P:[102,96],K:[134,98],E:[52,110],W:[40,104],A:[164,100],T:[172,108]},{H:[49,96],S:[60,96],P:[102,96],K:[134,98],E:[52,110],W:[40,104],A:[150,70],T:[160,64]}],props:[['bench',30,100,116]],eq:[['roller','A']],tempo:'Hạ chậm 2–3 giây'},
+ calf:{root:'T',k:[ST,{H:[102,4],S:[102,15],P:[102,57],K:[102,87],A:[102,117],T:[112,126],E:[102,39],W:[102,61]}],eq:[],tempo:'Giữ 1 giây ở đỉnh'},
+ curl:{root:'A',k:[st({E:[100,48],W:[104,70]}),st({E:[102,48],W:[114,28]})],eq:[['db','W']],tempo:'Khuỷu cố định · hạ 2 giây'},
+ pushdown:{root:'A',k:[st({E:[98,46],W:[118,34]}),st({E:[98,46],W:[106,68]})],props:[['pulley',126,-24]],eq:[['cable','W',126,-24],['handle','W']],tempo:'Chỉ cẳng tay chuyển động'},
+ ohe:{root:'A',k:[st({E:[104,0],W:[88,10]}),st({E:[104,0],W:[106,-22]})],eq:[['dbv','W']],tempo:'Khuỷu hướng lên trần'},
+ bench_dip:{root:'W',k:[{W:[78,90],E:[82,68],S:[86,44],H:[88,33],P:[88,86],K:[118,94],A:[146,122],T:[156,116]},{W:[78,90],E:[62,72],S:[86,64],H:[88,53],P:[90,106],K:[120,108],A:[146,122],T:[156,116]}],props:[['box',40,90,40,36]],tempo:'Hạ tới khuỷu 90°'},
+ face_pull:{root:'A',k:[st({E:[124,22],W:[146,22]}),st({E:[82,18],W:[104,10]})],props:[['pulley',176,20]],eq:[['cable','W',176,20],['handle','W']],tempo:'Kéo về mặt, tách hai tay'},
+ lateral:{root:'P',front:1,k:[{...FRONT,EL:[85,48],WL:[84,70],ER:[115,48],WR:[116,70]},{...FRONT,EL:[66,28],WL:[44,30],ER:[134,28],WR:[156,30]}],eq:[['db','WL'],['db','WR']],tempo:'Dẫn bằng khuỷu, lên ngang vai'},
+ yt:{root:'P',front:1,k:[{...FRONT,EL:[90,48],WL:[94,68],ER:[110,48],WR:[106,68]},{...FRONT,EL:[76,6],WL:[62,-12],ER:[124,6],WR:[138,-12]}],eq:[['db','WL'],['db','WR']],tempo:'Tạ nhẹ, nâng tay chữ Y'},
+ hang_raise:{root:'W',ground:false,k:[{...HANG,K:[100,106],A:[100,134],T:[106,140]},{...HANG,P:[102,76],K:[130,72],A:[160,70],T:[164,60]}],props:[['hbar',100,-10]],tempo:'Cuộn khung chậu, không đung đưa'},
+ dead_bug:{root:'P',k:[{...DBUG,E:[62,94],W:[64,70],K:[102,86],A:[130,86],T:[132,76],E2:[62,94],W2:[64,70],K2:[102,86],A2:[130,86],T2:[132,76]},{...DBUG,E:[38,112],W:[16,108],K:[102,86],A:[130,86],T:[132,76],E2:[62,94],W2:[64,70],K2:[132,112],A2:[160,114],T2:[164,104]}],tempo:'Lưng dưới ép sàn'},
+ plank:{root:'T',k:[{W:[80,124],E:[58,124],S:[58,100],H:[47,96],P:[100,108],K:[131,114],A:[160,120],T:[164,126]},{W:[80,124],E:[58,124],S:[58,101],H:[47,97],P:[100,112],K:[131,116],A:[160,120],T:[164,126]}],tempo:'Giữ yên, thở đều'}
+};
+const EXMOT={back_squat:'squat_bar',hex_squat:'squat_hex',goblet_squat:'squat_goblet',bw_squat:'squat_bw',deadlift:'deadlift',rack_pull:'rack_pull',rdl:'rdl',db_rdl:['rdl',[['db','W']]],sl_rdl:'sl_rdl',glute_bridge:'bridge',hip_thrust:'hip_thrust',
+ bench:'bench',db_bench:['bench',[['db','W']]],incline_db:'incline',smith_incline:['incline',[['bar','W',0,0,14]]],machine_chest:'machine_chest',floor_press:'floor_press',pushup:'pushup',dip:'dip',
+ ohp:'ohp',db_ohp:'db_ohp',machine_ohp:['db_ohp',[['handle','W']]],pike_pushup:'pike',barbell_row:'row',cable_row:'cable_row',wide_cable_row:'wide_row',seal_row:'seal_row',db_row:['row',[['db','W']]],inverted_row:'inverted',
+ lat_pulldown:'pulldown',wide_pulldown:'pulldown',single_pulldown:['pulldown',[['cable','W',108,-26],['handle','W']]],pullup:'pullup',neg_pullup:'pullup',lunge:'lunge',bulgarian:'bulgarian',step_up:'step_up',leg_press:'leg_press',leg_ext:'leg_ext',leg_curl:'leg_curl',calf:'calf',
+ bb_curl:['curl',[['bar','W',0,0,13]]],db_curl:'curl',hammer:['curl',[['cable','W',128,124],['handle','W']]],pushdown:'pushdown',db_ohe:'ohe',bench_dip:'bench_dip',lateral:'lateral',yt_raise:'yt',face_pull:'face_pull',hanging_raise:'hang_raise',dead_bug:'dead_bug',plank:'plank'};
+const RIGS={};
+function rigFor(id){
+  if(RIGS[id])return RIGS[id];
+  let m=EXMOT[id];if(!m)return null;let eqo=null;if(Array.isArray(m)){eqo=m[1];m=m[0]}
+  const M=MOT[m];const edges=M.front?FRONT_EDGES:SIDE_EDGES;
+  const ks=M.k.map(k=>{const o={...k};if(!M.front)['E','W','K','A','T'].forEach(j=>{if(!o[j+'2'])o[j+'2']=o[j]});return o});
+  const adj={};edges.forEach(([a,b])=>{(adj[a]=adj[a]||[]).push(b);(adj[b]=adj[b]||[]).push(a)});
+  const order=[];const seen=new Set([M.root]);const q=[M.root];
+  while(q.length){const a=q.shift();for(const b of adj[a]||[])if(!seen.has(b)){seen.add(b);order.push([a,b]);q.push(b)}}
+  const len=order.map(([a,b])=>{const k=ks[0];return Math.hypot(k[b][0]-k[a][0],k[b][1]-k[a][1])});
+  const ang=ks.map(k=>order.map(([a,b])=>Math.atan2(k[b][1]-k[a][1],k[b][0]-k[a][0])));
+  const props=M.props||[];const eq=eqo||M.eq||[];
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const add=(x,y)=>{x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y)};
+  ks.forEach(k=>Object.values(k).forEach(p=>add(p[0],p[1])));
+  props.forEach(p=>{if(p[0]==='box'||p[0]==='bench'){add(p[1],p[2]);add(p[1]+(p[3]||0),126)}else if(p[1]!=null)add(p[1],p[2])});
+  eq.forEach(e=>{if(e[0]==='cable')add(e[2],e[3])});
+  if(M.ground!==false)add(x0,126);
+  x0-=18;x1+=18;y0-=16;y1+=8;
+  let w=x1-x0,h=y1-y0;const ar=4/3;if(w/h<ar){const nw=h*ar;x0-=(nw-w)/2;w=nw}else{const nh=w/ar;y0-=(nh-h)/2;h=nh}
+  return RIGS[id]={M,edges,order,len,ang,root:ks.map(k=>k[M.root]),props,eq,vb:[x0,y0,w,h].map(v=>Math.round(v))};
+}
+function figPose(r,t){
+  const a0=r.ang[0],a1=r.ang[1];const P={};const R0=r.root[0],R1=r.root[1];
+  P[r.M.root]=[R0[0]+(R1[0]-R0[0])*t,R0[1]+(R1[1]-R0[1])*t];
+  r.order.forEach(([a,b],i)=>{let d=a1[i]-a0[i];d=Math.atan2(Math.sin(d),Math.cos(d));const an=a0[i]+d*t;P[b]=[P[a][0]+Math.cos(an)*r.len[i],P[a][1]+Math.sin(an)*r.len[i]]});
+  return P;
+}
+const f1=n=>Math.round(n*10)/10;
+function figProps(r){
+  return r.props.map(p=>{const k=p[0];
+    if(k==='box')return `<rect class="pr" x="${p[1]}" y="${p[2]}" width="${p[3]}" height="${p[4]}" rx="3"/>`;
+    if(k==='bench')return `<rect class="pr" x="${p[1]}" y="${p[2]}" width="${p[3]}" height="7" rx="3"/><line class="gr" x1="${p[1]+10}" y1="${p[2]+7}" x2="${p[1]+10}" y2="126"/><line class="gr" x1="${p[1]+p[3]-10}" y1="${p[2]+7}" x2="${p[1]+p[3]-10}" y2="126"/>`;
+    if(k==='seat')return `<rect class="pr" x="${p[1]-16}" y="${p[2]+2}" width="34" height="7" rx="3"/><line class="gr" x1="${p[1]}" y1="${p[2]+9}" x2="${p[1]}" y2="126"/><rect class="pr" x="${p[1]-20}" y="${p[2]-46}" width="7" height="46" rx="3"/>`;
+    if(k==='incline')return `<polygon class="pr" points="108,98 132,98 132,104 108,104"/><polygon class="pr" points="70,58 112,92 108,98 66,64"/><line class="gr" x1="120" y1="104" x2="120" y2="126"/><line class="gr" x1="80" y1="74" x2="80" y2="126"/>`;
+    if(k==='recline')return `<polygon class="pr" points="44,54 82,100 76,106 38,60"/><rect class="pr" x="76" y="100" width="30" height="7" rx="3"/><line class="gr" x1="90" y1="107" x2="90" y2="126"/><line class="gr" x1="120" y1="80" x2="170" y2="30"/>`;
+    if(k==='hbar')return `<line class="gr" x1="${p[1]}" y1="${p[2]}" x2="${p[1]+26}" y2="${p[2]-14}"/><circle class="sl" cx="${p[1]}" cy="${p[2]}" r="4"/>`;
+    if(k==='pbar')return `<line class="gr" x1="${p[1]}" y1="${p[2]}" x2="${p[1]}" y2="126"/><line class="pr" x1="${p[1]-26}" y1="${p[2]}" x2="${p[1]+26}" y2="${p[2]}" style="stroke-width:6;stroke-linecap:round"/>`;
+    if(k==='pulley')return `<circle class="pr" cx="${p[1]}" cy="${p[2]}" r="5"/>`;
+    if(k==='pad')return `<circle class="pr" cx="${p[1]}" cy="${p[2]}" r="6"/>`;
+    if(k==='post')return `<line class="gr" x1="${p[1]}" y1="${p[2]}" x2="${p[1]}" y2="126"/><rect class="pr" x="${p[1]-14}" y="104" width="14" height="4" rx="2"/>`;
+    return '';}).join('');
+}
+function figDyn(r,P){
+  let s='';const line=(a,b,c)=>P[a]&&P[b]?`<line class="${c}" x1="${f1(P[a][0])}" y1="${f1(P[a][1])}" x2="${f1(P[b][0])}" y2="${f1(P[b][1])}"/>`:'';
+  r.eq.forEach(e=>{if(e[0]==='cable'&&P[e[1]])s+=`<line class="cb" x1="${f1(P[e[1]][0])}" y1="${f1(P[e[1]][1])}" x2="${e[2]}" y2="${e[3]}"/>`});
+  const far=r.edges.filter(([a,b])=>FAR.has(a)||FAR.has(b)||(r.M.front&&(b==='EL'||b==='WL'||b==='HL'||b==='KL'||b==='AL'||a==='SL')));
+  const near=r.edges.filter(e=>!far.includes(e)&&e[1]!=='H');
+  s+=figEq(r,P,1);
+  far.forEach(([a,b])=>s+=line(a,b,'lf'));
+  near.forEach(([a,b])=>s+=line(a,b,'ln'));
+  if(P.H)s+=`<circle class="hd" cx="${f1(P.H[0])}" cy="${f1(P.H[1])}" r="8"/>`;
+  return s+figEq(r,P,0);
+}
+function figEq(r,P,back){let s='';
+  r.eq.forEach(e=>{const p=P[e[1]];if(!p||(e[5]==='back')!==!!back)return;const x=f1(p[0]+(e[2]&&e[0]==='bar'?e[2]:0)),y=f1(p[1]+(e[3]&&e[0]==='bar'?e[3]:0));
+    if(e[0]==='bar')s+=`<circle class="pl" cx="${x}" cy="${y}" r="${e[4]||15}"/><circle class="sv" cx="${x}" cy="${y}" r="3"/>`;
+    else if(e[0]==='db')s+=`<rect class="pd" x="${f1(x-8)}" y="${f1(y-5)}" width="16" height="10" rx="3"/>`;
+    else if(e[0]==='dbv')s+=`<rect class="pd" x="${f1(x-5)}" y="${f1(y-9)}" width="10" height="18" rx="3"/>`;
+    else if(e[0]==='handle')s+=`<circle class="sv" cx="${x}" cy="${y}" r="4"/>`;
+    else if(e[0]==='wbar')s+=`<line class="cb2" x1="${f1(x-16)}" y1="${y}" x2="${f1(x+16)}" y2="${y}"/>`;
+    else if(e[0]==='roller')s+=`<circle class="pd" cx="${x}" cy="${y}" r="6"/>`;
+    else if(e[0]==='sled')s+=`<line class="cb2" x1="${f1(x-14)}" y1="${f1(y-14)}" x2="${f1(x+14)}" y2="${f1(y+14)}" style="stroke-width:6"/>`;
+  });
+  return s;
+}
+const ease=t=>.5-.5*Math.cos(Math.PI*t);
+function phase(u){u=u%1;if(u<.12)return 0;if(u<.5)return ease((u-.12)/.38);if(u<.62)return 1;return 1-ease((u-.62)/.38)}
+function figSVG(id,cls,anim){
+  const r=rigFor(id);if(!r)return '';const vb=r.vb;
+  const P=figPose(r,anim?0:1);
+  return `<svg class="fig ${cls||''}" viewBox="${vb.join(' ')}" ${anim?`data-anim="${id}"`:''} role="img" aria-label="Minh họa ${esc(EX[id].n)}">${r.M.ground!==false?`<line class="gr" x1="${vb[0]}" y1="127" x2="${vb[0]+vb[2]}" y2="127"/>`:''}${figProps(r)}<g class="dyn">${figDyn(r,P)}</g></svg>`;
+}
+let figRAF=null,figT0=0;
+function figLoop(ts){
+  const els=document.querySelectorAll('svg[data-anim]');
+  if(!els.length){figRAF=null;return}
+  if(!figT0)figT0=ts;
+  const sp=UI.figSlow?0.5:1;
+  els.forEach(el=>{const r=rigFor(el.dataset.anim);const per=(el.dataset.anim==='neg_pullup'?3.6:2.6)/sp;const t=phase(((ts-figT0)/1000)/per);el.querySelector('.dyn').innerHTML=figDyn(r,figPose(r,el.dataset.anim==='neg_pullup'?1-t:t))});
+  figRAF=requestAnimationFrame(figLoop);
+}
+function figStart(){if(!figRAF&&document.querySelector('svg[data-anim]')){figT0=0;figRAF=requestAnimationFrame(figLoop)}}
+function figTempo(id){const m=EXMOT[id];const k=Array.isArray(m)?m[0]:m;return (MOT[k]&&MOT[k].tempo)||''}
 
 /* ============ engine ============ */
 const P=()=>S.profile;
@@ -731,7 +900,7 @@ function renderWorkout(){
   plan.ex.forEach((e,i)=>{
     const x=EX[e.id];const pr=S.prog[e.id];const allDone=e.sets.every(q=>q.done);
     const last=lastPerf(e.id,k);
-    s+=`<section class="excard ${allDone?'done':''}"><div class="exhead"><div class="grow"><p class="eyebrow">${pad(i+1)} · ${esc(x.m)}</p><h3>${esc(x.n)}</h3><p class="small muted">${x.time?'Giữ':'Mục tiêu'} ${x.time?e.sets[0].r+' giây':e.tr[0]+'–'+e.tr[1]+' rep'} · nghỉ ${e.rest}s${last?` · lần trước ${last}`:''}</p>${x.bar&&e.w>20?`<div class="plates" style="margin-top:4px">Mỗi bên: ${plateStr(e.sets.find(q=>!q.done)?.w??e.w)}</div>`:''}</div><div class="row" style="gap:6px"><button class="mini" data-a="exinfo" data-v="${e.id}" aria-label="Hướng dẫn">?</button>${!d.finished?`<button class="mini" data-a="swap" data-e="${i}" aria-label="Đổi bài">⇄</button>`:''}</div></div>
+    s+=`<section class="excard ${allDone?'done':''}"><div class="exhead"><button class="exthumb" data-a="exinfo" data-v="${e.id}" aria-label="Xem cách làm ${esc(x.n)}">${figSVG(e.id)}</button><div class="grow"><p class="eyebrow">${pad(i+1)} · ${esc(x.m)}</p><h3>${esc(x.n)}</h3><p class="small muted">${x.time?'Giữ':'Mục tiêu'} ${x.time?e.sets[0].r+' giây':e.tr[0]+'–'+e.tr[1]+' rep'} · nghỉ ${e.rest}s${last?` · lần trước ${last}`:''}</p>${x.bar&&e.w>20?`<div class="plates" style="margin-top:4px">Mỗi bên: ${plateStr(e.sets.find(q=>!q.done)?.w??e.w)}</div>`:''}</div><div class="row" style="gap:6px"><button class="mini" data-a="exinfo" data-v="${e.id}" aria-label="Hướng dẫn">?</button>${!d.finished?`<button class="mini" data-a="swap" data-e="${i}" aria-label="Đổi bài">⇄</button>`:''}</div></div>
     <div class="setgrid sethead"><span>Set</span><span>${x.bw?'Tạ thêm':'Kg'}</span><span>${x.time?'Giây':'Rep'}</span><span></span></div>`;
     e.sets.forEach((q,j)=>{
       const isExtra=j>=e.sets.length-e.extra;
@@ -920,8 +1089,8 @@ function renderLearn(){
   s+=`<section class="card"><div class="card-h"><p class="eyebrow">Thư viện ${Object.keys(EX).length} bài tập</p></div>
   <input class="inp" id="learn-q" data-in="learnq" placeholder="Tìm bài: squat, vai, lưng…" value="${esc(UI.learnQ)}" aria-label="Tìm bài tập">
   <div class="chips" style="margin:10px 0 4px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px">${groups.map(g=>`<button class="chip ${mf===g[0]?'on':''}" style="flex:none;padding:7px 12px;font-size:13px" data-a="learnm" data-v="${g[0]}">${g[1]}</button>`).join('')}</div>
-  <div>${list.map(id=>{const x=EX[id];return `<button class="li" data-a="exinfo" data-v="${id}"><span class="ix">${x.c?'CB':'CL'}</span><span class="tx"><b>${esc(x.n)}</b><span>${esc(x.m)} · ${['','Dễ','Vừa','Khó'][x.lv]} · ${x.eq==='gym'?'Phòng gym':x.eq==='db'?'Tạ đơn':'Không dụng cụ'}</span></span><span class="muted">›</span></button>`}).join('')||'<p class="small muted">Không tìm thấy bài nào.</p>'}</div>
-  <p class="small muted" style="margin-top:8px">CB = bài cơ bản nhiều khớp. CL = bài cô lập.</p></section>`;
+  <div>${list.map(id=>{const x=EX[id];return `<button class="li" data-a="exinfo" data-v="${id}"><span class="thumb">${figSVG(id)}</span><span class="tx"><b>${esc(x.n)}</b><span>${esc(x.m)} · ${['','Dễ','Vừa','Khó'][x.lv]} · ${x.eq==='gym'?'Phòng gym':x.eq==='db'?'Tạ đơn':'Không dụng cụ'}</span></span><span class="muted">›</span></button>`}).join('')||'<p class="small muted">Không tìm thấy bài nào.</p>'}</div>
+  <p class="small muted" style="margin-top:8px">Chạm vào bài để xem hình động cách làm.</p></section>`;
   return s;
 }
 
@@ -951,16 +1120,18 @@ function renderOnboarding(){
 }
 
 /* ============ sheets ============ */
-function openSheet(html){$('#sheet').innerHTML=`<div class="sheet-wrap" data-a="closesheet"><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div></div>`}
+function openSheet(html){$('#sheet').innerHTML=`<div class="sheet-wrap" data-a="closesheet"><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div></div>`;figStart()}
 function closeSheet(){$('#sheet').innerHTML=''}
 function exSheet(id){
   const x=EX[id];const pr=S.prog[id];const best=S.adapt.best[id];
   const hist=[];Object.keys(S.days).sort().reverse().forEach(k=>{const d=S.days[k];if(!d.plan||hist.length>=5)return;const e=d.plan.ex.find(z=>z.id===id);if(e){const dn=e.sets.filter(q=>q.done);if(dn.length)hist.push(`${toD(k).getDate()}/${toD(k).getMonth()+1}: `+dn.map(q=>x.bw?q.r:fk(q.w)+'×'+q.r).join(', '))}});
   openSheet(`<p class="eyebrow">${esc(x.m)}</p><h2 style="margin:2px 0 10px">${esc(x.n)}</h2>
+  <div class="stage">${figSVG(id,'',true)}<div class="stage-bar"><span class="small muted">${esc(figTempo(id))}</span><button class="mini ${UI.figSlow?'acc':''}" data-a="figslow" data-v="${id}">${UI.figSlow?'Chậm ×0,5':'Tốc độ ×1'}</button></div></div>
+  <div style="height:12px"></div>
   <div class="row wrap" style="gap:6px;margin-bottom:14px"><span class="pill">${x.c?'Bài cơ bản':'Bài cô lập'}</span><span class="pill">${['','Dễ','Vừa','Khó'][x.lv]}</span>${pr&&!x.bw?`<span class="pill acc">Đang tập ${fk(pr.w)} kg × ${pr.tr}</span>`:''}${best?`<span class="pill good">1RM ~${fk(Math.round(best*2)/2)} kg</span>`:''}</div>
   <div class="card stack" style="gap:10px"><h3>Cách làm đúng</h3><ul class="bullets">${x.cues.map(c=>`<li>${esc(c)}</li>`).join('')}</ul><h3 style="color:var(--bad)">Lỗi thường gặp</h3><ul class="bullets">${x.err.map(c=>`<li>${esc(c)}</li>`).join('')}</ul></div>
   ${hist.length?`<div class="card" style="margin-top:12px"><h3 style="margin-bottom:6px">Lịch sử gần đây</h3>${hist.map(h=>`<p class="small muted num" style="font-size:15px">${esc(h)}</p>`).join('')}</div>`:''}
-  <a class="btn ghost sm" style="margin-top:12px;text-decoration:none" href="https://www.youtube.com/results?search_query=${encodeURIComponent(x.n+' form hướng dẫn')}" target="_blank" rel="noopener">Xem video hướng dẫn ↗</a>`);
+`);
 }
 function settingsSheet(){
   const p=P();
@@ -1049,6 +1220,7 @@ const A={
  closewk:()=>{UI.view='main';REST=null;drawRest();render();window.scrollTo(0,0)},
  makeup:()=>{S.adapt.makeup=today();touchState();render();toast('Đã chuyển buổi tập sang hôm nay')},
  exinfo:el=>exSheet(el.dataset.v),
+ figslow:el=>{UI.figSlow=!UI.figSlow;exSheet(el.dataset.v)},
  adj:el=>{const q=wkSet(el.dataset.e,el.dataset.s);const e=S.days[today()].plan.ex[+el.dataset.e];const x=EX[e.id];const v=+el.dataset.v;
   if(el.dataset.f==='w'){q.w=Math.max(0,+(q.w+v*(x.bw?2.5:incOf(x))).toFixed(2));e.sets.forEach((z,j)=>{if(j>+el.dataset.s&&!z.done)z.w=q.w})}
   else q.r=Math.max(0,q.r+v*(x.time?5:1));
