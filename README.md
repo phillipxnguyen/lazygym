@@ -21,8 +21,8 @@
 - **Khi tập:** ghi set một chạm, đồng hồ nghỉ tự chạy, xem kết quả lần trước, tính bánh tạ cần lắp mỗi bên, đổi bài khi máy bận.
 - **Ăn uống:** calo và macro (Katch-McArdle hoặc Mifflin-St Jeor), ngày tập ăn nhiều hơn ngày nghỉ, ghi nhanh món Việt. Mỗi thứ Hai calo tự chỉnh theo xu hướng cân nặng.
 - **Tiến bộ:** khối lượng nâng theo tuần, biểu đồ cân nặng, kỷ lục 1RM ước tính, check-in tuần.
-- **Hình động minh họa:** chạm vào bài bất kỳ là xem ngay hình người tập đúng tư thế, có tạ, ghế, cáp đi kèm, kèm nhịp lên xuống và nút xem chậm. Vẽ bằng code nên không tải video, chạy cả khi mất mạng.
-- **Học:** 9 bài học ngắn và thư viện 52 bài tập có hình động, hướng dẫn và lỗi thường gặp. Có điểm kinh nghiệm (XP) và 6 cấp từ Tân binh tới Chuyên nghiệp.
+- **Ảnh minh họa thật:** chạm vào bài bất kỳ là thấy ảnh người tập thật chuyển qua lại giữa tư thế bắt đầu và kết thúc, kèm nhịp lên xuống, nút xem chậm và chạm để dừng. Ảnh nằm sẵn trong app (WebP, khoảng 14 KB mỗi ảnh), xem một lần là dùng được khi mất mạng. Nếu ảnh chưa tải được thì app hiện hình động vẽ bằng code thay vào.
+- **Học:** 9 bài học ngắn và thư viện 53 bài tập có hình động, hướng dẫn và lỗi thường gặp. Có điểm kinh nghiệm (XP) và 6 cấp từ Tân binh tới Chuyên nghiệp.
 
 ## Dữ liệu
 
@@ -36,5 +36,8 @@ Mọi dữ liệu nằm trong trình duyệt của máy đang dùng, không gử
 | `sw.js` | Service worker để chạy offline |
 | `manifest.webmanifest` | Thông tin cài đặt lên màn hình chính |
 | `icon.svg`, `icon-*.png`, `apple-touch-icon.png` | Biểu tượng app |
+| `img/` | Ảnh minh họa bài tập: `<bài>-0.webp` (bắt đầu), `<bài>-1.webp` (kết thúc), `<bài>-t.webp` (ảnh nhỏ) |
+
+Ảnh bài tập lấy từ [Free Exercise DB](https://github.com/yuhonas/free-exercise-db), phát hành public domain (Unlicense).
 
 Khi sửa `index.html` hoặc thêm file, tăng số trong `CACHE` ở `sw.js` (ví dụ `lazygym-v2`) để máy người dùng tải bản mới.

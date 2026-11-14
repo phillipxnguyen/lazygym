@@ -297,7 +297,20 @@ select.inp{appearance:none;-webkit-appearance:none}
 .stage-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
 .thumb{width:40px;height:40px;border-radius:12px;background:var(--surface2);flex:none;padding:2px;overflow:hidden}
 .thumb .fig .ln,.thumb .fig .lf{stroke-width:8}
-.exthumb{width:58px;height:46px;border-radius:12px;background:var(--surface2);flex:none;padding:2px;overflow:hidden}
+.exthumb{width:58px;height:58px;border-radius:12px;background:var(--surface2);flex:none;overflow:hidden;padding:0}
+.thumb img,.exthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb:has(img){padding:0}
+.photo{position:relative;aspect-ratio:3/2;max-width:100%;border-radius:14px;overflow:hidden;background:var(--surface2);cursor:pointer}
+.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.photo .f1{animation:xf var(--dur,2.8s) infinite ease-in-out}
+.photo.paused .f1,.photo.paused .ph{animation-play-state:paused}
+.photo .ph{position:absolute;left:10px;top:10px;padding:4px 9px;border-radius:999px;font-size:11.5px;font-weight:800;background:rgba(14,17,22,.72);color:#fff}
+.photo .p1{animation:xf var(--dur,2.8s) infinite ease-in-out}
+.photo .p0{animation:xf0 var(--dur,2.8s) infinite ease-in-out}
+.photo .pp{position:absolute;right:10px;bottom:10px;padding:4px 9px;border-radius:999px;font-size:11.5px;font-weight:800;background:rgba(14,17,22,.72);color:#fff}
+@keyframes xf{0%,36%{opacity:0}50%,86%{opacity:1}100%{opacity:0}}
+@keyframes xf0{0%,36%{opacity:1}50%,86%{opacity:0}100%{opacity:1}}
+.credit{font-size:11px;color:var(--muted);margin-top:6px}
 </style>
 </head>
 <body>
@@ -900,7 +913,7 @@ function renderWorkout(){
   plan.ex.forEach((e,i)=>{
     const x=EX[e.id];const pr=S.prog[e.id];const allDone=e.sets.every(q=>q.done);
     const last=lastPerf(e.id,k);
-    s+=`<section class="excard ${allDone?'done':''}"><div class="exhead"><button class="exthumb" data-a="exinfo" data-v="${e.id}" aria-label="Xem cách làm ${esc(x.n)}">${figSVG(e.id)}</button><div class="grow"><p class="eyebrow">${pad(i+1)} · ${esc(x.m)}</p><h3>${esc(x.n)}</h3><p class="small muted">${x.time?'Giữ':'Mục tiêu'} ${x.time?e.sets[0].r+' giây':e.tr[0]+'–'+e.tr[1]+' rep'} · nghỉ ${e.rest}s${last?` · lần trước ${last}`:''}</p>${x.bar&&e.w>20?`<div class="plates" style="margin-top:4px">Mỗi bên: ${plateStr(e.sets.find(q=>!q.done)?.w??e.w)}</div>`:''}</div><div class="row" style="gap:6px"><button class="mini" data-a="exinfo" data-v="${e.id}" aria-label="Hướng dẫn">?</button>${!d.finished?`<button class="mini" data-a="swap" data-e="${i}" aria-label="Đổi bài">⇄</button>`:''}</div></div>
+    s+=`<section class="excard ${allDone?'done':''}"><div class="exhead"><button class="exthumb" data-a="exinfo" data-v="${e.id}" aria-label="Xem cách làm ${esc(x.n)}"><img src="img/${e.id}-t.webp" alt="" loading="lazy" decoding="async" data-fb="${e.id}" data-fbs="1"></button><div class="grow"><p class="eyebrow">${pad(i+1)} · ${esc(x.m)}</p><h3>${esc(x.n)}</h3><p class="small muted">${x.time?'Giữ':'Mục tiêu'} ${x.time?e.sets[0].r+' giây':e.tr[0]+'–'+e.tr[1]+' rep'} · nghỉ ${e.rest}s${last?` · lần trước ${last}`:''}</p>${x.bar&&e.w>20?`<div class="plates" style="margin-top:4px">Mỗi bên: ${plateStr(e.sets.find(q=>!q.done)?.w??e.w)}</div>`:''}</div><div class="row" style="gap:6px"><button class="mini" data-a="exinfo" data-v="${e.id}" aria-label="Hướng dẫn">?</button>${!d.finished?`<button class="mini" data-a="swap" data-e="${i}" aria-label="Đổi bài">⇄</button>`:''}</div></div>
     <div class="setgrid sethead"><span>Set</span><span>${x.bw?'Tạ thêm':'Kg'}</span><span>${x.time?'Giây':'Rep'}</span><span></span></div>`;
     e.sets.forEach((q,j)=>{
       const isExtra=j>=e.sets.length-e.extra;
@@ -1089,7 +1102,7 @@ function renderLearn(){
   s+=`<section class="card"><div class="card-h"><p class="eyebrow">Thư viện ${Object.keys(EX).length} bài tập</p></div>
   <input class="inp" id="learn-q" data-in="learnq" placeholder="Tìm bài: squat, vai, lưng…" value="${esc(UI.learnQ)}" aria-label="Tìm bài tập">
   <div class="chips" style="margin:10px 0 4px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px">${groups.map(g=>`<button class="chip ${mf===g[0]?'on':''}" style="flex:none;padding:7px 12px;font-size:13px" data-a="learnm" data-v="${g[0]}">${g[1]}</button>`).join('')}</div>
-  <div>${list.map(id=>{const x=EX[id];return `<button class="li" data-a="exinfo" data-v="${id}"><span class="thumb">${figSVG(id)}</span><span class="tx"><b>${esc(x.n)}</b><span>${esc(x.m)} · ${['','Dễ','Vừa','Khó'][x.lv]} · ${x.eq==='gym'?'Phòng gym':x.eq==='db'?'Tạ đơn':'Không dụng cụ'}</span></span><span class="muted">›</span></button>`}).join('')||'<p class="small muted">Không tìm thấy bài nào.</p>'}</div>
+  <div>${list.map(id=>{const x=EX[id];return `<button class="li" data-a="exinfo" data-v="${id}"><span class="thumb"><img src="img/${id}-t.webp" alt="" loading="lazy" decoding="async" data-fb="${id}" data-fbs="1"></span><span class="tx"><b>${esc(x.n)}</b><span>${esc(x.m)} · ${['','Dễ','Vừa','Khó'][x.lv]} · ${x.eq==='gym'?'Phòng gym':x.eq==='db'?'Tạ đơn':'Không dụng cụ'}</span></span><span class="muted">›</span></button>`}).join('')||'<p class="small muted">Không tìm thấy bài nào.</p>'}</div>
   <p class="small muted" style="margin-top:8px">Chạm vào bài để xem hình động cách làm.</p></section>`;
   return s;
 }
@@ -1126,7 +1139,7 @@ function exSheet(id){
   const x=EX[id];const pr=S.prog[id];const best=S.adapt.best[id];
   const hist=[];Object.keys(S.days).sort().reverse().forEach(k=>{const d=S.days[k];if(!d.plan||hist.length>=5)return;const e=d.plan.ex.find(z=>z.id===id);if(e){const dn=e.sets.filter(q=>q.done);if(dn.length)hist.push(`${toD(k).getDate()}/${toD(k).getMonth()+1}: `+dn.map(q=>x.bw?q.r:fk(q.w)+'×'+q.r).join(', '))}});
   openSheet(`<p class="eyebrow">${esc(x.m)}</p><h2 style="margin:2px 0 10px">${esc(x.n)}</h2>
-  <div class="stage">${figSVG(id,'',true)}<div class="stage-bar"><span class="small muted">${esc(figTempo(id))}</span><button class="mini ${UI.figSlow?'acc':''}" data-a="figslow" data-v="${id}">${UI.figSlow?'Chậm ×0,5':'Tốc độ ×1'}</button></div></div>
+  <div class="stage"><div class="photo" data-a="photopause" data-fbid="${id}" style="--dur:${UI.figSlow?5.6:2.8}s"><img src="img/${id}-0.webp" alt="${esc(x.n)}: tư thế bắt đầu" data-fb="${id}" decoding="async"><img class="f1" src="img/${id}-1.webp" alt="${esc(x.n)}: tư thế kết thúc" data-fb="${id}" decoding="async"><span class="ph p0">1 · Bắt đầu</span><span class="ph p1">2 · Kết thúc</span><span class="pp">Chạm để dừng</span></div><div class="stage-bar"><span class="small muted">${esc(figTempo(id))}</span><button class="mini ${UI.figSlow?'acc':''}" data-a="figslow" data-v="${id}">${UI.figSlow?'Chậm ×0,5':'Tốc độ ×1'}</button></div><p class="credit">Ảnh: Free Exercise DB (public domain)</p></div>
   <div style="height:12px"></div>
   <div class="row wrap" style="gap:6px;margin-bottom:14px"><span class="pill">${x.c?'Bài cơ bản':'Bài cô lập'}</span><span class="pill">${['','Dễ','Vừa','Khó'][x.lv]}</span>${pr&&!x.bw?`<span class="pill acc">Đang tập ${fk(pr.w)} kg × ${pr.tr}</span>`:''}${best?`<span class="pill good">1RM ~${fk(Math.round(best*2)/2)} kg</span>`:''}</div>
   <div class="card stack" style="gap:10px"><h3>Cách làm đúng</h3><ul class="bullets">${x.cues.map(c=>`<li>${esc(c)}</li>`).join('')}</ul><h3 style="color:var(--bad)">Lỗi thường gặp</h3><ul class="bullets">${x.err.map(c=>`<li>${esc(c)}</li>`).join('')}</ul></div>
@@ -1221,6 +1234,7 @@ const A={
  makeup:()=>{S.adapt.makeup=today();touchState();render();toast('Đã chuyển buổi tập sang hôm nay')},
  exinfo:el=>exSheet(el.dataset.v),
  figslow:el=>{UI.figSlow=!UI.figSlow;exSheet(el.dataset.v)},
+ photopause:el=>{el.classList.toggle('paused');const t=el.querySelector('.pp');if(t)t.textContent=el.classList.contains('paused')?'Chạm để chạy tiếp':'Chạm để dừng'},
  adj:el=>{const q=wkSet(el.dataset.e,el.dataset.s);const e=S.days[today()].plan.ex[+el.dataset.e];const x=EX[e.id];const v=+el.dataset.v;
   if(el.dataset.f==='w'){q.w=Math.max(0,+(q.w+v*(x.bw?2.5:incOf(x))).toFixed(2));e.sets.forEach((z,j)=>{if(j>+el.dataset.s&&!z.done)z.w=q.w})}
   else q.r=Math.max(0,q.r+v*(x.time?5:1));
@@ -1295,6 +1309,9 @@ document.addEventListener('change',ev=>{const el=ev.target;
     if(el.dataset.in==='w'){q.w=v;const e=S.days[today()].plan.ex[+el.dataset.e];e.sets.forEach((z,j)=>{if(j>+el.dataset.s&&!z.done){z.w=v;const i=$('#w-'+el.dataset.e+'-'+j);if(i)i.value=fk(v)}})}else q.r=Math.round(v);touchDay(today())}
 });
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&UI.view==='workout')lockScreen()});
+document.addEventListener('error',ev=>{const el=ev.target;if(!el||el.tagName!=='IMG'||!el.dataset.fb)return;const id=el.dataset.fb;
+  if(el.dataset.fbs){el.outerHTML=figSVG(id);return}
+  const ph=el.closest('.photo');if(ph&&!ph.dataset.done){ph.dataset.done=1;ph.outerHTML=figSVG(id,'',true);figStart()}},true);
 
 /* ============ boot ============ */
 function boot(){
