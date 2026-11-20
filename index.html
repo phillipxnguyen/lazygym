@@ -393,28 +393,47 @@ const EX={
  face_pull:{n:'Face pull',m:'Vai sau · Lưng trên',eq:'gym',lv:1,c:0,k:.25,cues:['Kéo dây về mặt, tách hai tay ra ngoài'],err:['Kéo xuống cằm']},
  hanging_raise:{n:'Treo xà nâng chân',m:'Bụng',eq:'bw',lv:2,c:0,bw:1,cues:['Cuộn khung chậu lên, không đung đưa'],err:['Vung chân lấy đà']},
  dead_bug:{n:'Dead bug',m:'Bụng sâu',eq:'bw',lv:1,c:0,bw:1,cues:['Lưng dưới ép sàn','Duỗi tay chân đối diện chậm rãi'],err:['Lưng dưới nhấc lên']},
- plank:{n:'Plank',m:'Core',eq:'bw',lv:1,c:0,bw:1,time:1,cues:['Siết mông và bụng, thân thẳng'],err:['Võng hông','Nín thở']}
+ plank:{n:'Plank',m:'Core',eq:'bw',lv:1,c:0,bw:1,time:1,cues:['Siết mông và bụng, thân thẳng'],err:['Võng hông','Nín thở']},
+ cable_fly:{n:'Ép ngực cáp (crossover)',m:'Ngực',eq:'gym',lv:1,c:0,k:.12,cues:['Đứng giữa hai ròng rọc, bước một chân lên trước','Khuỷu hơi cong và giữ cố định, ép hai tay gặp nhau trước ngực','Mở tay về chậm tới khi ngực căng'],err:['Gập khuỷu thành động tác đẩy','Tạ quá nặng kéo vai ra trước']},
+ db_fly:{n:'Ép ngực tạ đơn',m:'Ngực',eq:'db',lv:1,c:0,k:.08,cues:['Nằm ghế phẳng, khuỷu hơi cong','Mở tay xuống tới ngang ngực rồi ôm lên như ôm thùng'],err:['Hạ quá sâu đau vai','Duỗi thẳng khuỷu']},
+ cable_crunch:{n:'Gập bụng với cáp',m:'Bụng',eq:'gym',lv:1,c:0,k:.35,cues:['Quỳ trước ròng rọc cao, dây thừng giữ cạnh đầu','Cuộn lưng, đưa khuỷu về phía đùi','Hông đứng yên'],err:['Ngồi xuống bằng hông thay vì cuộn bụng']},
+ pull_through:{n:'Cable pull-through',m:'Mông · Đùi sau',eq:'gym',lv:1,c:1,k:.35,cues:['Quay lưng về ròng rọc thấp, dây thừng giữa hai chân','Đẩy hông ra sau, lưng thẳng','Siết mông, đẩy hông về trước'],err:['Kéo bằng tay','Ngồi xổm thay vì gập hông']},
+ cable_kickback:{n:'Đá chân sau với cáp',m:'Mông',eq:'gym',lv:1,c:0,k:.1,cues:['Đai ở cổ chân, tay vịn máy','Đá chân ra sau bằng lực mông'],err:['Ưỡn lưng dưới','Vung chân lấy đà']},
+ cable_lateral:{n:'Dang tay ngang với cáp',m:'Vai giữa',eq:'gym',lv:1,c:0,k:.05,cues:['Ròng rọc thấp, tay phía xa cầm tay cầm','Dẫn bằng khuỷu lên ngang vai, hạ chậm'],err:['Nghiêng người lấy đà']},
+ cable_curl:{n:'Cuốn tay với cáp',m:'Tay trước',eq:'gym',lv:1,c:0,k:.25,cues:['Ròng rọc thấp, thanh thẳng','Khuỷu sát thân, cuốn lên và siết 1 giây'],err:['Đung đưa lưng']}
 };
+const GEAR={bb:'Tạ đòn + giàn squat',bench:'Ghế chỉnh dốc',db:'Tạ đơn',cable:'Máy cáp (kéo xô, kéo ngồi)',bar:'Xà đơn / xà kép',machine:'Máy chuyên dụng'};
+const PRESET={basic:['bb','bench','db','cable','bar'],gym:['bb','bench','db','cable','bar','machine'],db:['db','bench'],bw:[]};
+const EQN={basic:'Gym cơ bản',gym:'Gym đủ máy',db:'Tạ đơn ở nhà',bw:'Không dụng cụ'};
+const EXG={back_squat:['bb'],hex_squat:['machine'],goblet_squat:['db'],deadlift:['bb'],rack_pull:['bb'],rdl:['bb'],db_rdl:['db'],sl_rdl:['db'],hip_thrust:['bb','bench'],
+ bench:['bb','bench'],db_bench:['db','bench'],incline_db:['db','bench'],smith_incline:['machine'],machine_chest:['machine'],floor_press:['db'],dip:['bar'],
+ ohp:['bb'],db_ohp:['db','bench'],machine_ohp:['machine'],barbell_row:['bb'],cable_row:['cable'],wide_cable_row:['cable'],seal_row:['db','bench'],db_row:['db','bench'],inverted_row:['bb'],
+ lat_pulldown:['cable'],wide_pulldown:['cable'],single_pulldown:['cable'],pullup:['bar'],neg_pullup:['bar'],lunge:['db'],bulgarian:['db','bench'],step_up:['db','bench'],
+ leg_press:['machine'],leg_ext:['machine'],leg_curl:['machine'],bb_curl:['bb'],db_curl:['db'],hammer:['cable'],pushdown:['cable'],db_ohe:['db'],bench_dip:['bench'],
+ lateral:['db'],yt_raise:['db','bench'],face_pull:['cable'],hanging_raise:['bar'],cable_fly:['cable'],db_fly:['db','bench'],cable_crunch:['cable'],pull_through:['cable'],
+ cable_kickback:['cable'],cable_lateral:['cable'],cable_curl:['cable']};
+const MUSCLES=[['Ngực','Ngực'],['Lưng','Lưng|Xô'],['Vai','Vai'],['Tay trước','Tay trước'],['Tay sau','Tay sau'],['Đùi trước','Đùi trước|^Đùi ·'],['Đùi sau','Đùi sau'],['Mông','Mông'],['Bắp chân','Bắp chân'],['Bụng','Bụng|Core']];
 const PAT={
  squat:['back_squat','hex_squat','goblet_squat','bw_squat'],
+ fly:['cable_fly','db_fly','pushup'],
  hinge:['deadlift','rack_pull','rdl','db_rdl','glute_bridge'],
  hinge2:['rdl','db_rdl','sl_rdl','glute_bridge'],
- hpush:['bench','db_bench','pushup'],
+ hpush:['bench','db_bench','machine_chest','pushup'],
  vpush:['ohp','machine_ohp','db_ohp','pike_pushup'],
  ipush:['incline_db','smith_incline','pushup'],
  hpull:['barbell_row','cable_row','db_row','inverted_row'],
  hpull2:['wide_cable_row','seal_row','db_row','inverted_row'],
- vpull:['pullup','lat_pulldown','neg_pullup'],
+ vpull:['pullup','lat_pulldown','wide_pulldown','single_pulldown','neg_pullup'],
  lunge:['bulgarian','lunge','step_up','bw_squat'],
- quad:['leg_press','leg_ext','step_up','goblet_squat','bw_squat'],
- ham:['leg_curl','sl_rdl','db_rdl','glute_bridge'],
- glute:['hip_thrust','glute_bridge'],
+ quad:['leg_press','leg_ext','bulgarian','step_up','goblet_squat','bw_squat'],
+ ham:['leg_curl','pull_through','sl_rdl','db_rdl','glute_bridge'],
+ glute:['hip_thrust','cable_kickback','glute_bridge'],
  calf:['calf'],
- biceps:['bb_curl','hammer','db_curl'],
- triceps:['pushdown','db_ohe','bench_dip'],
- lateral:['lateral'],
+ biceps:['bb_curl','hammer','cable_curl','db_curl'],
+ triceps:['pushdown','db_ohe','dip','bench_dip'],
+ lateral:['lateral','cable_lateral'],
  rear:['face_pull','yt_raise'],
- core:['hanging_raise','dead_bug','plank']
+ core:['hanging_raise','cable_crunch','dead_bug','plank']
 };
 const PROGRAMS={
  fb:{n:'Toàn thân',days:[
@@ -424,10 +443,10 @@ const PROGRAMS={
  ul:{n:'Trên / Dưới',days:[
   {n:'Thân trên A',p:['hpush','hpull','vpush','vpull','triceps','biceps']},
   {n:'Thân dưới A',p:['squat','hinge2','quad','ham','calf','core']},
-  {n:'Thân trên B',p:['ipush','vpull','hpull2','lateral','rear','triceps']},
+  {n:'Thân trên B',p:['ipush','vpull','hpull2','lateral','fly','rear','triceps']},
   {n:'Thân dưới B',p:['hinge','lunge','glute','quad','calf','core']}]},
  ppl5:{n:'Đẩy · Kéo · Chân + Trên/Dưới',days:[
-  {n:'Đẩy',p:['hpush','vpush','ipush','lateral','triceps','core']},
+  {n:'Đẩy',p:['hpush','vpush','ipush','lateral','triceps','fly','core']},
   {n:'Kéo',p:['vpull','hpull','rear','biceps','hinge2','hpull2']},
   {n:'Chân',p:['squat','hinge2','lunge','ham','calf','core']},
   {n:'Thân trên',p:['ipush','hpull2','vpush','vpull','lateral','biceps']},
@@ -436,7 +455,7 @@ const PROGRAMS={
   {n:'Đẩy A',p:['hpush','vpush','ipush','lateral','triceps','core']},
   {n:'Kéo A',p:['vpull','hpull','rear','biceps','hinge2','hpull2']},
   {n:'Chân A',p:['squat','hinge2','lunge','ham','calf','core']},
-  {n:'Đẩy B',p:['vpush','ipush','hpush','lateral','triceps','rear']},
+  {n:'Đẩy B',p:['vpush','ipush','fly','hpush','lateral','triceps','rear']},
   {n:'Kéo B',p:['hpull','vpull','hpull2','biceps','rear','core']},
   {n:'Chân B',p:['hinge','quad','glute','ham','calf','core']}]},
  vifit:{n:'Giáo án VIFIT 4 buổi',days:[
@@ -659,17 +678,21 @@ function figTempo(id){const m=EXMOT[id];const k=Array.isArray(m)?m[0]:m;return (
 /* ============ engine ============ */
 const P=()=>S.profile;
 function program(){const p=P();if(p.program==='vifit')return PROGRAMS.vifit;const n=p.days.length;return n<=3?PROGRAMS.fb:n===4?PROGRAMS.ul:n===5?PROGRAMS.ppl5:PROGRAMS.ppl6}
-function eqOk(x,eq){return eq==='gym'?true:eq==='db'?(x.eq==='db'||x.eq==='bw'):x.eq==='bw'}
+function myGear(eq){return new Set(PRESET[eq||(P()&&P().eq)]||PRESET.basic)}
+function okId(id,eq){const g=myGear(eq);return (EXG[id]||[]).every(x=>g.has(x))}
 function resolve(p,used){
-  if(EX[p])return p;
-  const c=(PAT[p]||[]).filter(id=>!used.has(id)&&eqOk(EX[id],P().eq));
+  let c;
+  if(EX[p]){if(okId(p)&&!used.has(p))return p;c=[];Object.keys(PAT).filter(k=>PAT[k].includes(p)).forEach(k=>PAT[k].forEach(x=>{if(x!==p&&!c.includes(x))c.push(x)}))}
+  else c=PAT[p]||[];
+  c=c.filter(id=>!used.has(id)&&okId(id));
   return c.find(id=>EX[id].lv<=P().level)||c[0]||null;
 }
 function alternatives(id){
   const pats=Object.keys(PAT).filter(k=>PAT[k].includes(id));
-  const set=new Set();pats.forEach(k=>PAT[k].forEach(x=>{if(x!==id&&eqOk(EX[x],P().eq))set.add(x)}));
+  const set=new Set();pats.forEach(k=>PAT[k].forEach(x=>{if(x!==id&&okId(x))set.add(x)}));
   return [...set];
 }
+const gearText=id=>(EXG[id]||[]).length?(EXG[id]).map(g=>GEAR[g].replace(/ \(.*\)/,'')).join(' + '):'Không dụng cụ';
 const isDb=x=>x.eq==='db';
 const incOf=x=>isDb(x)?1:2.5;
 function roundW(w,x){const s=incOf(x);let r=Math.round(w/s)*s;if(x.bar)r=Math.max(20,r);return Math.max(0,+r.toFixed(2))}
@@ -987,7 +1010,7 @@ function finishWorkout(rpe){
 function renderPlan(){
   const p=P();const k=today();const prog=program();const g=GOALS[p.goal];
   let s=`<section class="card"><div class="card-h"><div><p class="eyebrow">Mục tiêu</p><h2 style="margin-top:2px">${esc(g.n)}</h2></div><button class="link" data-a="settings">Chỉnh</button></div>
-  <div class="row wrap" style="gap:6px"><span class="pill">${esc(LVN[p.level])}</span><span class="pill">${p.days.length} buổi/tuần</span><span class="pill">${p.eq==='gym'?'Phòng gym':p.eq==='db'?'Tạ đơn tại nhà':'Không dụng cụ'}</span><span class="pill acc">${esc(prog.n)}</span></div>
+  <div class="row wrap" style="gap:6px"><span class="pill">${esc(LVN[p.level])}</span><span class="pill">${p.days.length} buổi/tuần</span><span class="pill">${esc(EQN[p.eq]||EQN.basic)}</span><span class="pill acc">${esc(prog.n)}</span></div>
   ${p.target?`<p class="small muted" style="margin-top:10px">Cân nặng mục tiêu ${fk(p.target)} kg · hiện tại ${fk(p.weight)} kg (${p.target<p.weight?'còn giảm':'còn tăng'} ${fk(Math.abs(+(p.weight-p.target).toFixed(1)))} kg)</p>`:''}</section>`;
   // week strip
   const mon=mondayOf(k);let wk='';let rot=S.adapt.rot;
@@ -1006,6 +1029,10 @@ function renderPlan(){
     else if(isSched(q)&&q<k&&q>=p.created)c='miss';else if(isSched(q)&&q>=k)c='sched';
     m+=`<div class="mc ${c} ${q===k?'today':''}">${i}</div>`}
   s+=`<section class="card"><div class="card-h"><p class="eyebrow">Tháng ${now.getMonth()+1}</p><span class="small muted">Màu đậm = hoàn thành nhiều</span></div><div class="month">${m}</div></section>`;
+  const avail=Object.keys(EX).filter(id=>okId(id));const gl=[...myGear()];
+  s+=`<section class="card"><div class="card-h"><p class="eyebrow">Dụng cụ cần có</p><button class="link" data-a="settings">Đổi</button></div>
+  ${gl.length?`<div class="exlist">${gl.map(g=>{const n=avail.filter(id=>(EXG[id]||[]).includes(g)).length;return `<div class="exrow" style="grid-template-columns:1fr auto"><span class="t">${esc(GEAR[g])}</span><span class="small muted">${n} bài</span></div>`}).join('')}</div>`:'<p class="small muted">Không cần dụng cụ. Tập bằng trọng lượng cơ thể.</p>'}
+  <p class="lab" style="margin:12px 0 6px">${avail.length} bài dùng được · nhóm cơ được tập</p><div class="row wrap" style="gap:6px">${MUSCLES.map(m=>{const re=new RegExp(m[1]);const ok=avail.some(id=>re.test(EX[id].m));return `<span class="pill ${ok?'good':''}">${ok?'✓ ':''}${m[0]}</span>`}).join('')}</div></section>`;
   // program
   s+=`<section class="card"><div class="card-h"><p class="eyebrow">Giáo án · ${esc(prog.n)}</p><span class="small muted">${prog.days.length} buổi xoay vòng</span></div>`;
   prog.days.forEach((dd,i)=>{const used=new Set();const ids=[];dd.p.forEach(pp=>{const id=resolve(pp,used);if(id){used.add(id);ids.push(id)}});const cnt=p.program==='vifit'?6:[0,4,5,6][p.level];const nx=i===S.adapt.rot%prog.days.length;
@@ -1098,17 +1125,18 @@ function renderLearn(){
   const done=Object.keys(S.adapt.lessons).length;
   let s=`<section class="card"><div class="card-h"><div><p class="eyebrow">Lộ trình kiến thức</p><h2 style="margin-top:2px">${done}/${LESSONS.length} bài đã học</h2></div></div><div class="meter" style="height:6px;margin-bottom:6px"><b style="width:${done/LESSONS.length*100}%"></b></div>
   <div>${LESSONS.map((l,i)=>`<button class="li" data-a="lesson" data-v="${l.id}"><span class="ix ${S.adapt.lessons[l.id]?'on':''}">${S.adapt.lessons[l.id]?'✓':pad(i+1)}</span><span class="tx"><b>${esc(l.t)}</b><span>${l.min} phút đọc · +15 XP</span></span><span class="muted">›</span></button>`).join('')}</div></section>`;
-  const list=Object.keys(EX).filter(id=>{const x=EX[id];if(mf!=='all'&&!(x.m.includes(mf)||(mf==='Bụng'&&x.m.includes('Core'))))return false;if(q&&!(x.n.toLowerCase().includes(q)||x.m.toLowerCase().includes(q)))return false;return true});
+  const list=Object.keys(EX).filter(id=>{const x=EX[id];if(UI.learnMine!==false&&!okId(id))return false;if(mf!=='all'&&!(x.m.includes(mf)||(mf==='Bụng'&&x.m.includes('Core'))))return false;if(q&&!(x.n.toLowerCase().includes(q)||x.m.toLowerCase().includes(q)))return false;return true});
   s+=`<section class="card"><div class="card-h"><p class="eyebrow">Thư viện ${Object.keys(EX).length} bài tập</p></div>
+  <div class="seg" style="margin-bottom:10px">${[[true,'Dụng cụ của tôi'],[false,'Tất cả bài']].map(o=>`<button class="${(UI.learnMine!==false)===o[0]?'on':''}" data-a="learnmine" data-v="${o[0]?1:0}">${o[1]}</button>`).join('')}</div>
   <input class="inp" id="learn-q" data-in="learnq" placeholder="Tìm bài: squat, vai, lưng…" value="${esc(UI.learnQ)}" aria-label="Tìm bài tập">
   <div class="chips" style="margin:10px 0 4px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px">${groups.map(g=>`<button class="chip ${mf===g[0]?'on':''}" style="flex:none;padding:7px 12px;font-size:13px" data-a="learnm" data-v="${g[0]}">${g[1]}</button>`).join('')}</div>
-  <div>${list.map(id=>{const x=EX[id];return `<button class="li" data-a="exinfo" data-v="${id}"><span class="thumb"><img src="img/${id}-t.webp" alt="" loading="lazy" decoding="async" data-fb="${id}" data-fbs="1"></span><span class="tx"><b>${esc(x.n)}</b><span>${esc(x.m)} · ${['','Dễ','Vừa','Khó'][x.lv]} · ${x.eq==='gym'?'Phòng gym':x.eq==='db'?'Tạ đơn':'Không dụng cụ'}</span></span><span class="muted">›</span></button>`}).join('')||'<p class="small muted">Không tìm thấy bài nào.</p>'}</div>
+  <div>${list.map(id=>{const x=EX[id];return `<button class="li" data-a="exinfo" data-v="${id}"><span class="thumb"><img src="img/${id}-t.webp" alt="" loading="lazy" decoding="async" data-fb="${id}" data-fbs="1"></span><span class="tx"><b>${esc(x.n)}</b><span>${esc(x.m)} · ${['','Dễ','Vừa','Khó'][x.lv]} · ${esc(gearText(id))}${okId(id)?'':' · <b style="color:var(--warn)">chưa có máy</b>'}</span></span><span class="muted">›</span></button>`}).join('')||'<p class="small muted">Không tìm thấy bài nào.</p>'}</div>
   <p class="small muted" style="margin-top:8px">Chạm vào bài để xem hình động cách làm.</p></section>`;
   return s;
 }
 
 /* ============ onboarding ============ */
-let OB={name:'',sex:'m',goal:'recomp',level:1,days:[1,2,4,5],eq:'gym',weight:'',height:'',age:'',bf:'',target:'',program:'vifit'};
+let OB={name:'',sex:'m',goal:'recomp',level:1,days:[1,2,4,5],eq:'basic',weight:'',height:'',age:'',bf:'',target:'',program:'vifit'};
 function renderOnboarding(){
   const g=GOALS[OB.goal];const progN=OB.program==='vifit'?PROGRAMS.vifit.n:(OB.days.length<=3?PROGRAMS.fb.n:OB.days.length===4?PROGRAMS.ul.n:OB.days.length===5?PROGRAMS.ppl5.n:PROGRAMS.ppl6.n);
   return `<div class="stack" style="padding-block:calc(10px + env(safe-area-inset-top,0px)) 40px">
@@ -1118,7 +1146,8 @@ function renderOnboarding(){
   <div class="field"><span class="lab">1 · Mục tiêu chính</span><div class="chips">${Object.entries(GOALS).map(([k,v])=>`<button class="chip ${OB.goal===k?'on':''}" data-a="ob" data-k="goal" data-v="${k}">${v.n}<small>${v.s}</small></button>`).join('')}</div></div>
   <div class="field"><span class="lab">2 · Kinh nghiệm</span><div class="seg">${[[1,'Mới tập'],[2,'6–24 tháng'],[3,'Trên 2 năm']].map(l=>`<button class="${OB.level===l[0]?'on':''}" data-a="ob" data-k="level" data-v="${l[0]}">${l[1]}</button>`).join('')}</div></div>
   <div class="field"><span class="lab">3 · Ngày tập trong tuần (${OB.days.length} buổi)</span><div class="chips" style="flex-wrap:nowrap;gap:5px">${MON.map(w=>`<button class="chip day ${OB.days.includes(w)?'on':''}" data-a="obday" data-v="${w}">${WD[w]}</button>`).join('')}</div></div>
-  <div class="field"><span class="lab">4 · Dụng cụ</span><div class="seg">${[['gym','Phòng gym'],['db','Tạ đơn ở nhà'],['bw','Không dụng cụ']].map(l=>`<button class="${OB.eq===l[0]?'on':''}" data-a="ob" data-k="eq" data-v="${l[0]}">${l[1]}</button>`).join('')}</div></div>
+  <div class="field"><span class="lab">4 · Dụng cụ</span><div class="chips">${[['basic','Gym cơ bản','5 món có ở mọi phòng gym'],['gym','Gym đủ máy','Thêm leg press, đá đùi, Smith…'],['db','Tạ đơn ở nhà','Tạ đơn + ghế'],['bw','Không dụng cụ','Tập bằng cơ thể']].map(l=>`<button class="chip ${OB.eq===l[0]?'on':''}" data-a="ob" data-k="eq" data-v="${l[0]}">${l[1]}<small>${l[2]}</small></button>`).join('')}</div>
+   ${OB.eq==='basic'?`<p class="small muted">Chỉ cần: ${PRESET.basic.map(g=>GEAR[g]).join(', ')}. Đủ ${Object.keys(EX).filter(id=>okId(id,'basic')).length} bài cho mọi nhóm cơ.</p>`:''}</div>
   <div class="field"><span class="lab">5 · Chỉ số cơ thể</span>
    <div class="seg" style="margin-bottom:8px">${[['m','Nam'],['f','Nữ']].map(l=>`<button class="${OB.sex===l[0]?'on':''}" data-a="ob" data-k="sex" data-v="${l[0]}">${l[1]}</button>`).join('')}</div>
    <div class="grid3">${[['weight','Cân nặng','kg'],['height','Chiều cao','cm'],['age','Tuổi','']].map(f=>`<div class="field"><label for="ob-${f[0]}">${f[1]}${f[2]?' ('+f[2]+')':''}</label><input class="inp" id="ob-${f[0]}" inputmode="decimal" data-in="ob" data-k="${f[0]}" value="${OB[f[0]]}" placeholder="${{weight:65,height:170,age:25}[f[0]]}"></div>`).join('')}</div>
@@ -1153,7 +1182,7 @@ function settingsSheet(){
   <div class="field"><span class="lab">Mục tiêu</span><div class="chips" id="st-goal">${Object.entries(GOALS).map(([k,v])=>`<button class="chip ${p.goal===k?'on':''}" data-a="stpick" data-g="st-goal" data-v="${k}">${v.n}</button>`).join('')}</div></div>
   <div class="field"><span class="lab">Cấp chương trình</span><div class="seg" id="st-level">${[1,2,3].map(l=>`<button class="${p.level===l?'on':''}" data-a="stpick" data-g="st-level" data-v="${l}">${LVN[l]}</button>`).join('')}</div></div>
   <div class="field"><span class="lab">Ngày tập</span><div class="chips" id="st-days" style="flex-wrap:nowrap;gap:5px">${MON.map(w=>`<button class="chip day ${p.days.includes(w)?'on':''}" data-a="sttoggle" data-v="${w}">${WD[w]}</button>`).join('')}</div></div>
-  <div class="field"><span class="lab">Dụng cụ</span><div class="seg" id="st-eq">${[['gym','Gym'],['db','Tạ đơn'],['bw','Không']].map(l=>`<button class="${p.eq===l[0]?'on':''}" data-a="stpick" data-g="st-eq" data-v="${l[0]}">${l[1]}</button>`).join('')}</div></div>
+  <div class="field"><span class="lab">Dụng cụ</span><div class="seg" id="st-eq">${[['basic','Gym cơ bản'],['gym','Đủ máy'],['db','Tạ đơn'],['bw','Không']].map(l=>`<button class="${p.eq===l[0]?'on':''}" data-a="stpick" data-g="st-eq" data-v="${l[0]}">${l[1]}</button>`).join('')}</div><p class="small muted">Gym cơ bản: ${PRESET.basic.map(g=>GEAR[g]).join(', ')}.</p></div>
   <div class="field"><span class="lab">Giáo án</span><div class="seg" id="st-prog">${[['vifit','VIFIT 4 buổi'],['auto','App thiết kế']].map(l=>`<button class="${(p.program||'auto')===l[0]?'on':''}" data-a="stpick" data-g="st-prog" data-v="${l[0]}">${l[1]}</button>`).join('')}</div></div>
   <div class="grid3">${[['weight','Cân nặng'],['height','Chiều cao'],['age','Tuổi'],['bf','% mỡ'],['target','Mục tiêu kg'],['steps','Bước/ngày']].map(f=>`<div class="field"><label for="st-${f[0]}">${f[1]}</label><input class="inp" id="st-${f[0]}" inputmode="decimal" value="${p[f[0]]??''}"></div>`).join('')}</div>
   <button class="btn" data-a="savesettings">Lưu thay đổi</button>
@@ -1212,12 +1241,12 @@ const A={
  tab:el=>setTab(el.dataset.v),
  settings:()=>settingsSheet(),
  closesheet:(el,ev)=>{if(ev.target===el)closeSheet()},
- ob:el=>{const k=el.dataset.k;let v=el.dataset.v;if(k==='level')v=+v;OB[k]=v;if(k==='program'&&v==='vifit'){OB.days=[1,2,4,5];OB.eq='gym'}render()},
+ ob:el=>{const k=el.dataset.k;let v=el.dataset.v;if(k==='level')v=+v;OB[k]=v;if(k==='program'&&v==='vifit'){OB.days=[1,2,4,5];if(OB.eq!=='gym')OB.eq='basic'}render()},
  obday:el=>{const w=+el.dataset.v;OB.days=OB.days.includes(w)?OB.days.filter(x=>x!==w):[...OB.days,w];if(OB.program==='vifit'&&OB.days.length!==4)OB.program='auto';render()},
  create:()=>{
   if(OB.days.length<2)return;
   const n=v=>{const x=parseFloat(String(v).replace(',','.'));return isFinite(x)&&x>0?x:null};
-  S.profile={name:OB.name.trim(),sex:OB.sex,goal:OB.goal,level:OB.level,days:[...OB.days].sort(),eq:OB.eq,weight:n(OB.weight)||65,height:n(OB.height)||165,age:n(OB.age)||25,bf:n(OB.bf),target:n(OB.target),program:OB.program,created:today(),act:1,steps:GOALS[OB.goal].steps,water:8,protK:1.8,fatP:.25};
+  S.profile={gearV:1,name:OB.name.trim(),sex:OB.sex,goal:OB.goal,level:OB.level,days:[...OB.days].sort(),eq:OB.eq,weight:n(OB.weight)||65,height:n(OB.height)||165,age:n(OB.age)||25,bf:n(OB.bf),target:n(OB.target),program:OB.program,created:today(),act:1,steps:GOALS[OB.goal].steps,water:8,protK:1.8,fatP:.25};
   S.adapt=defAdapt();S.prog={};
   if(OB.program==='vifit'){const r=GOALS[OB.goal];Object.entries(VIFIT_W).forEach(([id,w])=>{if(EX[id])S.prog[id]={w,tr:rangeFor(id)[1],f:0,n:0}})}
   S.adapt.bw=[{d:today(),kg:S.profile.weight}];
@@ -1258,6 +1287,7 @@ const A={
  sleep:el=>{const k=today();const d=getDay(k,true);d.habits.sleep=clamp((d.habits.sleep||0)+(+el.dataset.v),0,14);touchDay(k);render()},
  levelup:()=>{P().level=Math.min(3,P().level+1);touchState();render();toast('Đã nâng lên '+LVN[P().level])},
  learnm:el=>{UI.learnM=el.dataset.v;render()},
+ learnmine:el=>{UI.learnMine=el.dataset.v==='1';render()},
  lesson:el=>lessonSheet(el.dataset.v),
  lessondone:el=>{S.adapt.lessons[el.dataset.v]=today();touchState();closeSheet();render();toast('+15 XP')},
  savebw:()=>{const v=parseFloat(($('#bw-in').value||'').replace(',','.'));if(!(v>25&&v<300)){toast('Nhập cân nặng hợp lệ, ví dụ 65,5');return}
@@ -1315,6 +1345,7 @@ document.addEventListener('error',ev=>{const el=ev.target;if(!el||el.tagName!=='
 
 /* ============ boot ============ */
 function boot(){
+  if(P()&&!P().gearV){if(P().eq==='gym')P().eq='basic';P().gearV=1;const td=S.days[today()];if(td&&td.plan&&!td.started)delete td.plan;touchState()}
   if(P()){
     const r=adaptKcal();if(r)setTimeout(()=>toast(`Calo tự chỉnh ${r.adj>0?'+':''}${r.adj} kcal theo cân nặng tuần qua`),800);
     const d=S.days[today()];if(d&&d.started&&!d.finished&&UI.view!=='workout'){/* resume prompt shown via button */}

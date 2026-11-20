@@ -12,7 +12,8 @@
 
 ## Tính năng
 
-- **Giáo án tự tạo** theo mục tiêu, kinh nghiệm, số buổi mỗi tuần và dụng cụ (phòng gym, tạ đơn, không dụng cụ). Có sẵn giáo án VIFIT 4 buổi.
+- **Giáo án tự tạo** theo mục tiêu, kinh nghiệm, số buổi mỗi tuần và dụng cụ. Có sẵn giáo án VIFIT 4 buổi.
+- **Gym cơ bản (mặc định):** chỉ cần 5 món có ở hầu hết phòng gym: tạ đòn + giàn squat, ghế chỉnh dốc, tạ đơn, máy cáp (kéo xô, kéo ngồi), xà đơn/xà kép. Đủ 53 bài cho cả 10 nhóm cơ. Bài cần máy chuyên dụng (leg press, đá đùi, móc đùi, máy đẩy ngực/vai, Smith, thanh hex) tự đổi sang bài tương đương; chọn "Gym đủ máy" để dùng lại. Ngoài ra có chế độ "Tạ đơn ở nhà" và "Không dụng cụ".
 - **Tự tăng tạ:** làm đủ mọi set ở mức rep cao nhất thì buổi sau tăng tạ. Hụt rep 2 buổi liền thì giảm khoảng 10%.
 - **Tự bù khi hụt mục tiêu:** buổi trước thiếu set thì buổi sau cộng thêm (tối đa 4). Hôm qua thiếu bước chân thì hôm nay mục tiêu tăng thêm.
 - **Hỏi cảm giác:** trước buổi tập (Mệt / Bình thường / Sung sức) và sau buổi tập (độ khó). App chỉnh số set theo câu trả lời.
@@ -22,7 +23,7 @@
 - **Ăn uống:** calo và macro (Katch-McArdle hoặc Mifflin-St Jeor), ngày tập ăn nhiều hơn ngày nghỉ, ghi nhanh món Việt. Mỗi thứ Hai calo tự chỉnh theo xu hướng cân nặng.
 - **Tiến bộ:** khối lượng nâng theo tuần, biểu đồ cân nặng, kỷ lục 1RM ước tính, check-in tuần.
 - **Ảnh minh họa thật:** chạm vào bài bất kỳ là thấy ảnh người tập thật chuyển qua lại giữa tư thế bắt đầu và kết thúc, kèm nhịp lên xuống, nút xem chậm và chạm để dừng. Ảnh nằm sẵn trong app (WebP, khoảng 14 KB mỗi ảnh), xem một lần là dùng được khi mất mạng. Nếu ảnh chưa tải được thì app hiện hình động vẽ bằng code thay vào.
-- **Học:** 9 bài học ngắn và thư viện 53 bài tập có hình động, hướng dẫn và lỗi thường gặp. Có điểm kinh nghiệm (XP) và 6 cấp từ Tân binh tới Chuyên nghiệp.
+- **Học:** 9 bài học ngắn và thư viện 60 bài tập có hình động, hướng dẫn và lỗi thường gặp. Có điểm kinh nghiệm (XP) và 6 cấp từ Tân binh tới Chuyên nghiệp.
 
 ## Dữ liệu
 
